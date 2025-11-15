@@ -1,15 +1,27 @@
-import { OpenAI } from 'openai';
-import fs from 'fs';
-import path from 'path';
+import { DallEAPIWrapper } from "@langchain/openai";
+import fs from "fs";
+import path from "path";
 
+const TODAY = new Date();
 export class ImageService {
-  private openai: OpenAI;
+  private dalleWrapper: DallEAPIWrapper;
   private imagesDir: string;
 
   constructor(apiKey: string, imagesDir: string) {
-    this.openai = new OpenAI({ apiKey });
-    this.imagesDir = imagesDir;
-    
+    this.dalleWrapper = new DallEAPIWrapper({
+      model: "dall-e-3",
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+      apiKey,
+    });
+    this.imagesDir = path.join(
+      imagesDir,
+      `${TODAY.getFullYear()}-${(TODAY.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${TODAY.getDate().toString().padStart(2, "0")}`
+    );
+
     if (!fs.existsSync(this.imagesDir)) {
       fs.mkdirSync(this.imagesDir, { recursive: true });
     }
@@ -17,30 +29,26 @@ export class ImageService {
 
   async generateImage(word: string, context: string): Promise<string | null> {
     try {
-      const prompt = `A clear, high-quality image representing the German word "${word}". ${context ? `Context: ${context}` : ''} The image should be simple, clear, and focused on the main concept of the word.`;
-      
-      const response = await this.openai.images.generate({
-        model: 'dall-e-3',
-        prompt: prompt,
-        n: 1,
-        size: '1024x1024',
-        quality: 'standard',
-      });
+      const prompt = `I am creating Anki cards to remember German words. Please help me create images for them. "${word}". ${
+        context ? `Context: ${context}` : ""
+      } They should be simple colorful drawings, easy to remember and associate the word with. Then should not contain any muslim themes, like hijabs. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them, ESPECIALLY the keyword.`;
 
-      const imageUrl = response.data[0].url;
+      const imageUrl = await this.dalleWrapper.invoke(prompt);
       if (!imageUrl) return null;
 
       const imageResponse = await fetch(imageUrl);
       const imageBuffer = await imageResponse.arrayBuffer();
-      
-      const filename = `${Date.now()}_${word.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+
+      const filename = `${Date.now()}_${word.replace(
+        /[^a-zA-Z0-9]/g,
+        "_"
+      )}.png`;
       const filePath = path.join(this.imagesDir, filename);
-      
+
       fs.writeFileSync(filePath, Buffer.from(imageBuffer));
       return filePath;
-      
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error("Error generating image:", error);
       return null;
     }
   }

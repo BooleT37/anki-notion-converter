@@ -7,6 +7,7 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
+    "noEmit": true,
     "module": "nodenext",
     "target": "esnext",
     "types": [],
@@ -34,11 +35,8 @@
 
     // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

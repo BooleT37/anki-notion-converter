@@ -6,6 +6,7 @@
     "start": "ts-node src/index.ts",
     "build": "tsc",
     "dev": "ts-node --watch src/index.ts",
+    "regenerate-image": "ts-node src/utils/regenerateImage.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,13 +14,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/core": "^1.0.1",
+    "@langchain/openai": "^1.0.0",
     "@types/node": "^24.8.1",
     "csv-parse": "^6.1.0",
     "csv-stringify": "^6.6.0",
     "dotenv": "^17.2.3",
-    "langchain": "^1.0.1",
-    "openai": "^6.5.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
   }
 }

@@ -1,26 +1,53 @@
-import { parse as parseCsv, stringify as stringifyCsv } from 'csv-parse/sync';
-import { stringify as csvStringify } from 'csv-stringify/sync';
-import fs from 'fs';
-import path from 'path';
-import { NotionWord } from '../types';
+import { parse as parseCsv } from "csv-parse/sync";
+import { stringify as csvStringify } from "csv-stringify/sync";
+import fs from "fs";
+import path from "path";
+import { NotionWord } from "../types";
+import { z } from "zod";
 
+const CsvRecordSchema = z.object({
+  Word: z.string().min(1, "Word is required"),
+  Translation: z.string().optional(),
+  "Example sentence": z.string().optional(),
+  "Example sentence translation": z.string().optional(),
+});
+
+const CsvArraySchema = z.array(CsvRecordSchema);
+
+interface Record {
+  Word: string;
+  Translation?: string;
+  "Example sentence"?: string;
+  "Example sentence translation"?: string;
+}
 export class CsvProcessor {
   static readCsv(filePath: string): NotionWord[] {
     try {
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const records = parseCsv(fileContent, {
+      let fileContent = fs.readFileSync(filePath, "utf-8");
+      // Remove BOM character if present
+      if (fileContent.charCodeAt(0) === 0xfeff) {
+        fileContent = fileContent.slice(1);
+      }
+      const records = parseCsv<Record>(fileContent, {
         columns: true,
         skip_empty_lines: true,
       });
-      
-      return records.map((record: any) => ({
-        Name: record.Name,
-        Translation: record.Translation,
-        'Example sentence': record['Example sentence'],
-        'Example sentence translation': record['Example sentence translation']
+
+      const validatedRecords = CsvArraySchema.parse(records);
+
+      return validatedRecords.map((record) => ({
+        Name: record.Word,
+        Translation: record.Translation || "",
+        "Example sentence": record["Example sentence"] || "",
+        "Example sentence translation":
+          record["Example sentence translation"] || "",
       }));
     } catch (error) {
-      throw new Error(`Error reading CSV file: ${error.message}`);
+      throw new Error(
+        `Error reading CSV file: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   }
 
@@ -30,24 +57,30 @@ export class CsvProcessor {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      
+
       const csvContent = csvStringify(data, { header: true });
       fs.writeFileSync(filePath, csvContent);
     } catch (error) {
-      throw new Error(`Error writing CSV file: ${error.message}`);
+      throw new Error(
+        `Error writing CSV file: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   }
 
   static sanitizeWord(word: NotionWord): NotionWord {
     return {
       ...word,
-      Name: this.capitalizeFirstLetter(word.Name.trim()),
-      Translation: word.Translation ? this.capitalizeFirstLetter(word.Translation.trim()) : ''
+      Name: this.uncapitalizeFirstLetter(word.Name.trim()),
+      Translation: word.Translation
+        ? this.uncapitalizeFirstLetter(word.Translation.trim())
+        : "",
     };
   }
 
-  private static capitalizeFirstLetter(str: string): string {
+  private static uncapitalizeFirstLetter(str: string): string {
     if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str.charAt(0).toLowerCase() + str.slice(1);
   }
 }

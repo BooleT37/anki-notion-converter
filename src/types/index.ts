@@ -1,14 +1,20 @@
 export interface NotionWord {
   Name: string;
   Translation: string;
-  'Example sentence': string;
-  'Example sentence translation': string;
+  "Example sentence": string;
+  "Example sentence translation": string;
 }
 
-export interface AnkiWord extends NotionWord {
-  // Additional fields will be added later as per requirements
+export interface AnkiWord {
+  German: string;
+  Russian: string;
+  "Sample sentence": string;
+  "Sample sentence without the word": string;
+  "Sample sentence translation (rus)": string;
+  "German Alternatives": string;
+  "Plural and inflected forms": string;
+  "Part of Speech": string;
   imagePath?: string;
-  // Add more Anki-specific fields here
 }
 
 export interface ProcessedWord extends NotionWord {
