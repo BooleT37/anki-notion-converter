@@ -31,7 +31,7 @@ export class ImageService {
     try {
       const prompt = `I am creating Anki cards to remember German words. Please help me create images for them. "${word}". ${
         context ? `Context: ${context}` : ""
-      } They should be simple colorful drawings, easy to remember and associate the word with. Then should not contain any muslim themes, like hijabs. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them, ESPECIALLY the keyword.`;
+      } They should be simple colorful drawings, easy to remember and associate the word with. The people on the pictures should have European appearance. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them, ESPECIALLY the keyword.`;
 
       const imageUrl = await this.dalleWrapper.invoke(prompt);
       if (!imageUrl) return null;

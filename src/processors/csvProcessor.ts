@@ -81,6 +81,6 @@ export class CsvProcessor {
 
   private static uncapitalizeFirstLetter(str: string): string {
     if (!str) return str;
-    return str.charAt(0).toLowerCase() + str.slice(1);
+    return str.trim().charAt(0).toLowerCase() + str.slice(1);
   }
 }
