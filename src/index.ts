@@ -102,7 +102,6 @@ async function main() {
             translatedWord.Name
           ),
           ankiEnhancementService.identifyPartOfSpeech(translatedWord.Name),
-          ankiEnhancementService.addArticleIfNeeded(translatedWord.Name),
         ]);
 
         // Create Anki word with all required fields

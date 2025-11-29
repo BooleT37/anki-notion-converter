@@ -7,7 +7,6 @@ export class AnkiEnhancementService {
   private germanAlternativesPrompt: ChatPromptTemplate;
   private pluralFormsPrompt: ChatPromptTemplate;
   private partOfSpeechPrompt: ChatPromptTemplate;
-  private articleDetectionPrompt: ChatPromptTemplate;
 
   constructor(apiKey: string) {
     this.chatModel = new ChatOpenAI({
@@ -44,14 +43,6 @@ export class AnkiEnhancementService {
       [
         "system",
         'Identify the part of speech for the given German word. Return only the part of speech (e.g., "noun", "verb", "adjective", "adverb", etc.).',
-      ],
-      ["user", "German word: {word}"],
-    ]);
-
-    this.articleDetectionPrompt = ChatPromptTemplate.fromMessages([
-      [
-        "system",
-        "For the given German noun, determine the correct definite article (der, die, das) and ensure the noun starts with a capital letter (German nouns are always capitalized). If the word already has an article, return it as-is but ensure proper capitalization. If it's not a noun, return the word unchanged. Only return the word with the correct article and capitalization.",
       ],
       ["user", "German word: {word}"],
     ]);
@@ -114,26 +105,6 @@ export class AnkiEnhancementService {
     } catch (error) {
       console.error("Error identifying part of speech:", error);
       return "";
-    }
-  }
-
-  async addArticleIfNeeded(word: string): Promise<string> {
-    try {
-      // Check if word already has an article
-      const hasArticle = /^(der|die|das)\s+/i.test(word.trim());
-      if (hasArticle) {
-        return word.trim();
-      }
-
-      const chain = this.articleDetectionPrompt.pipe(this.chatModel);
-      const response = await chain.invoke({
-        word,
-      });
-
-      return response.content.toString().trim();
-    } catch (error) {
-      console.error("Error adding article:", error);
-      return word;
     }
   }
 }
