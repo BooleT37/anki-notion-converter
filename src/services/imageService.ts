@@ -29,7 +29,7 @@ export class ImageService {
 
   async generateImage(word: string, context: string): Promise<string | null> {
     try {
-      const prompt = `I am creating Anki cards to remember German words. Please help me create images for them. "${word}". ${
+      const prompt = `I am creating Anki cards to remember German words. Please help me create images for them. The word is: "${word}". ${
         context ? `Context: ${context}` : ""
       } They should be simple colorful drawings, easy to remember and associate the word with. The people on the pictures should have European appearance. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them, ESPECIALLY the keyword.`;
 

@@ -17,7 +17,7 @@ export class TranslationService {
     this.textTranslationPrompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        "You are a professional translator. Translate the following text from {sourceLanguage} to {targetLanguage}. If the text contains the word {originalWord}, translate it using the following word(s): {translations}. Only return the translation, nothing else.",
+        "You are a professional translator. Translate the following text from {sourceLanguage} to {targetLanguage}. If the text contains the word {originalWord}, translate it using one of the following word(s): {translations}. Only return the translation, nothing else.",
       ],
       ["user", "{text}"],
     ]);

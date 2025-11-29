@@ -19,7 +19,7 @@ export class AnkiEnhancementService {
     this.sentenceWithoutWordPrompt = ChatPromptTemplate.fromMessages([
       [
         "system",
-        'Replace the specified German word in the sentence with "***". Keep everything else exactly the same. Only return the modified sentence, without the "Sentence: " prefix.',
+        'Replace the specified German word in the sentence(s), with "***". If there are more than one sentence, replace it in all of them. Keep everything else exactly the same, including the sentence numbers (1., 2., etc.). Only return the modified sentence, and optionally the sentence numbers (if they existed in the input) without the "Sentence: " prefix.',
       ],
       ["user", "Sentence: {sentence}\nWord to replace: {word}"],
     ]);
