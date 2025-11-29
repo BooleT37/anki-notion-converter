@@ -29,6 +29,23 @@ export class ImageService {
 
   async generateImage(word: string, context: string): Promise<string | null> {
     try {
+      // Create the word suffix that will be used in the filename
+      const wordSuffix = `_${word.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
+
+      // Check if an image with this word already exists
+      if (fs.existsSync(this.imagesDir)) {
+        const existingFiles = fs.readdirSync(this.imagesDir);
+        const existingImage = existingFiles.find((file) =>
+          file.endsWith(wordSuffix)
+        );
+
+        if (existingImage) {
+          const existingPath = path.join(this.imagesDir, existingImage);
+          console.log(`Image already exists for "${word}": ${existingImage}`);
+          return existingPath;
+        }
+      }
+
       const prompt = `I am creating Anki cards to remember German words. Please help me create images for the following example sentense(s):". ${
         context ? `${context}` : ""
       } They should be simple colorful drawings, easy to remember and associate the word with. The people on the pictures should have European appearance. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them`;
@@ -39,10 +56,7 @@ export class ImageService {
       const imageResponse = await fetch(imageUrl);
       const imageBuffer = await imageResponse.arrayBuffer();
 
-      const filename = `${Date.now()}_${word.replace(
-        /[^a-zA-Z0-9]/g,
-        "_"
-      )}.png`;
+      const filename = `${Date.now()}${wordSuffix}`;
       const filePath = path.join(this.imagesDir, filename);
 
       fs.writeFileSync(filePath, Buffer.from(imageBuffer));
