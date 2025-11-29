@@ -46,9 +46,9 @@ export class ImageService {
         }
       }
 
-      const prompt = `I am creating Anki cards to remember German words. Please help me create images for the following example sentense(s):". ${
+      const prompt = `I am creating Anki cards to remember German words. Please help me create images for the following example sentense:". ${
         context ? `${context}` : ""
-      } They should be simple colorful drawings, easy to remember and associate the word with. The people on the pictures should have European appearance. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them`;
+      } If there are multiple sentense, ONLY use the first one. They should be simple colorful drawings, easy to remember and associate the word with. The people on the pictures should have European appearance. And they SHOULD NOT (VERY IMPORTANT) have ANY WORDS in them`;
 
       const imageUrl = await this.dalleWrapper.invoke(prompt);
       if (!imageUrl) return null;
