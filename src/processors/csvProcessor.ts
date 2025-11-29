@@ -71,12 +71,25 @@ export class CsvProcessor {
 
   static sanitizeWord(word: NotionWord): NotionWord {
     return {
-      ...word,
       Name: this.uncapitalizeFirstLetter(word.Name.trim()),
       Translation: word.Translation
         ? this.uncapitalizeFirstLetter(word.Translation.trim())
         : "",
+      "Example sentence": word["Example sentence"]
+        ? this.removeUnnecessaryLineBreaks(word["Example sentence"])
+        : "",
+      "Example sentence translation": word["Example sentence translation"]
+        ? this.removeUnnecessaryLineBreaks(word["Example sentence translation"])
+        : "",
     };
+  }
+
+  private static removeUnnecessaryLineBreaks(text: string): string {
+    if (!text) return text;
+
+    // Replace line breaks that are NOT followed by a numbered item (digit + period)
+    // This regex matches newlines that are not immediately followed by a digit and period
+    return text.replace(/\n\s*(?!\d+\.)/g, " ").trim();
   }
 
   private static uncapitalizeFirstLetter(str: string): string {
